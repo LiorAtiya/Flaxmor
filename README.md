@@ -133,6 +133,17 @@ The prompt-engineering rationale (envelope design, confidence calibration, edge 
 - **`WEBUI_AUTH=false`** — Open WebUI login is disabled for convenience. Do not expose port 3000 beyond localhost.
 - **`language` detection is prompt-mitigated, not guaranteed** — models initially misreported the language of text mentioning foreign places/brands; fixed with a few-shot example in the prompt (6/6 correct at re-test, see SYSTEM_PROMPT.md iteration 9), but as with any LLM-enforced rule, it is probabilistic rather than guaranteed.
 
+## Future improvements
+
+Deliberately out of scope for the assignment, in priority order:
+
+1. **Prompt eval suite** — an automated regression corpus (messy receipt, injection email, multi-document paste, follow-up…) asserting envelope validity, mandatory `uncertain_fields` entries, and injection resistance. Would turn prompt quality from manual testing into CI-able regression, and make prompt-shortening measurable instead of a gamble.
+2. **Retry with exponential backoff** on upstream 429/5xx — only for requests that haven't started streaming (a stream, once started, cannot be safely retried).
+3. **Model allow-list enforcement** — validate `model` against `SERVED_MODELS`, return an OpenAI-shaped 404; closes the cost exposure noted in known limitations.
+4. **Middleware auth** — a static bearer key required from clients; closes the open-port limitation.
+5. **Usage metrics in logs** — parse the final SSE chunk's `usage` block into `request_completed` for per-request token cost tracking.
+6. **Rate limiting** (per-IP) and **CI** (pytest + docker build on push).
+
 ## Project structure
 
 ```
