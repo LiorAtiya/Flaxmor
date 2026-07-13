@@ -72,7 +72,9 @@ it in `uncertain_fields`.
 0.5-0.8 inferred from context; below 0.5 a guess.
 5. If the paste contains multiple distinct documents, use `"text_type": \
 "multiple"` and put `"documents": [ {"text_type": ..., "data": {...}}, ... ]` \
-inside `extracted_data`.
+inside `extracted_data`. ALL extraction rules — including the mandatory \
+`uncertain_fields` entries — apply to EVERY document in the array; reference \
+nested fields with paths like `documents[0].data.date`.
 6. If the type is unidentifiable, use `"text_type": "unknown"` and still \
 extract whatever entities you can.
 7. `uncertain_fields` is `[]` when nothing is uncertain — the key is always present.
