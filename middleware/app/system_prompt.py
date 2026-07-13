@@ -33,7 +33,7 @@ exceptions, regardless of input type, length, or quality.
 ```json
 {
   "text_type": "<document type in snake_case, e.g. receipt, email, job_listing, medical_report, legal_clause, invoice, resume; use \\"unknown\\" if unidentifiable>",
-  "language": "<ISO 639-1 code of the language the source text is WRITTEN in — judge by the words themselves, not by place names or brands mentioned in the content>",
+  "language": "<ISO 639-1 code of the language the source text is WRITTEN in. Judge ONLY by the words themselves, never by place names, brands, or geography in the content. Example: a receipt written in English from a store in tel aviv is \\"en\\", not \\"he\\">",
   "confidence_overall": <0.0-1.0, your confidence in the extraction as a whole>,
   "extracted_data": {
     // ALL key entities and data points found in the text.

@@ -24,7 +24,7 @@ Output exactly one fenced ```json code block in the exact structure below, and N
 ```json
 {
   "text_type": "<document type in snake_case, e.g. receipt, email, job_listing, medical_report, legal_clause, invoice, resume; use \"unknown\" if unidentifiable>",
-  "language": "<ISO 639-1 code of the language the source text is WRITTEN in — judge by the words themselves, not by place names or brands mentioned in the content>",
+  "language": "<ISO 639-1 code of the language the source text is WRITTEN in. Judge ONLY by the words themselves, never by place names, brands, or geography in the content. Example: a receipt written in English from a store in tel aviv is \"en\", not \"he\">",
   "confidence_overall": <0.0-1.0, your confidence in the extraction as a whole>,
   "extracted_data": {
     // ALL key entities and data points found in the text.
@@ -105,7 +105,7 @@ Iterations 1–5 were design-stage decisions informed by known prompt-failure pa
 
 **Prompt size trade-off:** the prompt weighs ~700 tokens, injected into every request — a fixed per-request cost (~$0.0001 on gpt-4o-mini, negligible; more noticeable on larger models at scale). The length is deliberate: each rule earns its place by preventing an observed or well-known failure mode, and every shortening attempt risks reopening one. Candidate for future trimming if usage costs ever matter.
 
-**Known limitation (model-dependent):** gpt-4o-mini sometimes misreports `language` when the content mentions foreign places/brands (an English-written receipt from "SuperPharm, tel aviv" got `"language": "he"`), even after the prompt was clarified to judge by the words themselves. gpt-4o classifies the same input correctly (`"en"`). Judged not worth further prompt complexity — it is a capability gap of the smaller model, documented instead.
+9. **Language misdetection (observed in the UI, both models)** — an English-written receipt mentioning "SuperPharm, tel aviv" got `"language": "he"`. First fix attempt was an abstract rule ("judge by the words themselves, not by place names or brands") — it looked sufficient in a single API test, but the user's manual UI testing showed both gpt-4o-mini AND gpt-4o still failing: the single passing test had been sampling luck (n=1). Second fix: a **concrete few-shot example** embedded in the field description ("a receipt written in English from a store in tel aviv is `en`, not `he`"). Re-test at n=3 per model: 6/6 correct. Lesson recorded: abstract rules underperform concrete examples on borderline classifications, and a single stochastic pass is not verification.
 
 ---
 
@@ -244,3 +244,11 @@ Iterations 1–5 were design-stage decisions informed by known prompt-failure pa
 **What happened:** `README.md` created: architecture + service table, prerequisites, quick start (`cp env.example .env` → `docker compose up -d --build`), five-part end-to-end verification guide (health endpoints, curl extraction, UI flow, structured-log tracing, failure handling), unit-test instructions, full configuration table, design-decisions table, known limitations (no middleware auth, no model enforcement, `WEBUI_AUTH=false`, gpt-4o-mini language quirk), and the project tree.
 
 **Status:** All assignment deliverables complete — README, SYSTEM_PROMPT.md, middleware with 26 unit tests, docker-compose config. Verified end-to-end with real OpenAI. Remaining: user's manual UI pass at http://localhost:3000 and the final commit.
+
+### 2026-07-13 — Step 9: Manual UI testing by the user → prompt iteration 9
+
+**What happened:** A full manual test checklist (15 cases: UI extraction scenarios, follow-up, mixed message, Hebrew, gibberish, multi-document, small talk, streaming, raw API, input validation, log tracing, failure handling, persistence) was prepared and the user began executing it in the UI.
+
+**Finding (user):** the receipt case returned `"language": "he"` for English text — and after switching to gpt-4o in the dropdown, **still** `"he"`. This disproved the earlier "gpt-4o classifies correctly" conclusion, which rested on a single API call (n=1 sampling luck).
+
+**Fix (iteration 9):** replaced the abstract instruction with a concrete few-shot example inside the `language` field description. Verified at n=3 per model through the running stack: 6/6 `"en"`. Documentation updated in both SYSTEM_PROMPT.md (iteration 9, replacing the former "known limitation") and README (reworded as prompt-mitigated, probabilistic).

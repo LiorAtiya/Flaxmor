@@ -131,7 +131,7 @@ The prompt-engineering rationale (envelope design, confidence calibration, edge 
 - **No middleware auth** — anyone who can reach port 8000 uses the server's OpenAI key. Fine on localhost; a real deployment would add an auth layer.
 - **No model allow-list enforcement** — the dropdown curates what users see, but a direct API caller may request any OpenAI model. Passthrough philosophy, accepted trade-off.
 - **`WEBUI_AUTH=false`** — Open WebUI login is disabled for convenience. Do not expose port 3000 beyond localhost.
-- **gpt-4o-mini `language` quirk** — may misreport the source language when the content mentions foreign places/brands; gpt-4o classifies correctly (see SYSTEM_PROMPT.md, Known limitation).
+- **`language` detection is prompt-mitigated, not guaranteed** — models initially misreported the language of text mentioning foreign places/brands; fixed with a few-shot example in the prompt (6/6 correct at re-test, see SYSTEM_PROMPT.md iteration 9), but as with any LLM-enforced rule, it is probabilistic rather than guaranteed.
 
 ## Project structure
 
