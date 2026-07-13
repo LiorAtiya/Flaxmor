@@ -124,7 +124,7 @@ All via `.env` (see [env.example](env.example)):
 | Logs | Structured JSON to stdout (12-factor) | `docker compose logs` locally; log shippers in real deployments. Full lifecycle per `request_id` |
 | Packaging | `pyproject.toml` (PEP 621) | Single file for deps + dev deps + pytest config; `requires-python = ">=3.11"` enforces the assignment constraint at install time |
 
-The prompt-engineering rationale (envelope design, confidence calibration, edge cases, and the iterations — including three real bugs found in E2E testing) is documented in [SYSTEM_PROMPT.md](SYSTEM_PROMPT.md).
+The prompt-engineering rationale (envelope design, confidence calibration, edge cases, and 10 documented iterations — 5 design-stage, 5 fixing real failures observed in end-to-end and manual UI testing) is documented in [SYSTEM_PROMPT.md](SYSTEM_PROMPT.md).
 
 ## Known limitations (deliberate, local-dev scope)
 
@@ -138,7 +138,8 @@ The prompt-engineering rationale (envelope design, confidence calibration, edge 
 ```
 ├── docker-compose.yml        # 3 services: postgres, middleware, open-webui
 ├── env.example               # configuration template (cp → .env)
-├── SYSTEM_PROMPT.md          # the prompt + design rationale + full work log
+├── SYSTEM_PROMPT.md          # the prompt + design rationale + iterations
+├── WORKLOG.md                # development-process log (not a deliverable)
 ├── README.md
 └── middleware/
     ├── Dockerfile            # python:3.11-slim, non-root, prod deps only
